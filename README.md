@@ -1,4 +1,4 @@
-#bramhaag's command framework (BCF)
+# bramhaag's command framework (BCF)
 #### A command framework for JDA inspired by [Aikar's Annotation Command Framework](https://google.com)
 
 ## Before you consider using this
