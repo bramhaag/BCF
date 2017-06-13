@@ -1,5 +1,5 @@
 # bramhaag's command framework (BCF)
-#### A command framework for JDA inspired by [Aikar's Annotation Command Framework](https://google.com)
+#### A command framework for JDA inspired by [Aikar's Annotation Command Framework](https://github.com/aikar/commands)
 
 ## Before you consider using this
 This project is under active development, everything is a subject to change and not all features are implemented yet.
