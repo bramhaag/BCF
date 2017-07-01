@@ -1,4 +1,4 @@
-package me.bramhaag.bcf.context;
+package me.bramhaag.bcf.resolver;
 
 import lombok.Data;
 import lombok.NonNull;
@@ -8,7 +8,7 @@ import java.lang.reflect.Parameter;
 import java.util.List;
 
 @Data
-public class CommandContext {
+public class ArgumentData {
 
     private final int index;
     @NonNull

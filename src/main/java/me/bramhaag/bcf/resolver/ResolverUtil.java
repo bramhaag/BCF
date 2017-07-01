@@ -1,6 +1,6 @@
-package me.bramhaag.bcf.context;
+package me.bramhaag.bcf.resolver;
 
-public class ContextUtil {
+public class ResolverUtil {
 
     public static Number parseNumber(String number) {
         return Double.parseDouble(number);

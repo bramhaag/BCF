@@ -6,6 +6,7 @@ import me.bramhaag.bcf.annotations.CommandBase;
 import me.bramhaag.bcf.annotations.Permission;
 import me.bramhaag.bcf.annotations.Subcommand;
 import me.bramhaag.bcf.annotations.Syntax;
+import me.bramhaag.bcf.exceptions.InvalidCommandException;
 import me.bramhaag.bcf.exceptions.NoBaseCommandException;
 
 import java.lang.reflect.Method;
@@ -20,7 +21,7 @@ public class CommandRegisterer {
     @Getter
     private HashMap<CommandData, List<CommandData>> commands = new HashMap<>();
 
-    public void register(BaseCommand executor) {
+    public void register(Object executor) {
         Class<?> commandClass = executor.getClass();
         Command command = commandClass.getAnnotation(Command.class);
         if(command == null) {
@@ -37,12 +38,20 @@ public class CommandRegisterer {
             throw new NoBaseCommandException(commandClass);
         }
 
+        if(baseMethod.getParameters()[0].getType() != CommandContext.class) {
+            throw new InvalidCommandException("Cannot register " + parts[0] + "! CommandContext is missing or not the first parameter in the base method!");
+        }
+
         List<CommandData> subcommands = Arrays.stream(commandClass.getMethods()).filter(method -> method.isAnnotationPresent(Subcommand.class)).map(method -> {
             Subcommand subcommand = method.getAnnotation(Subcommand.class);
             Permission scPermission = method.getAnnotation(Permission.class);
             Syntax scSyntax = method.getAnnotation(Syntax.class);
 
             String[] scParts = subcommand.value().split("\\|");
+
+            if(method.getParameters()[0].getType() != CommandContext.class) {
+                throw new InvalidCommandException("Cannot register " + parts[0] + " " + scParts[0] + "! CommandContext is missing or not the first parameter in the base method!");
+            }
 
             return new CommandData(
                     scParts[0],

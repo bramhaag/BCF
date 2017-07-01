@@ -1,12 +1,10 @@
 package me.bramhaag.bcf;
 
-import lombok.Data;
-import lombok.NonNull;
 import me.bramhaag.bcf.annotations.Default;
 import me.bramhaag.bcf.annotations.Optional;
-import me.bramhaag.bcf.context.CommandContext;
-import me.bramhaag.bcf.context.CommandContexts;
-import me.bramhaag.bcf.context.ContextResolver;
+import me.bramhaag.bcf.resolver.ArgumentData;
+import me.bramhaag.bcf.resolver.ArgumentsResolver;
+import me.bramhaag.bcf.resolver.ArgumentResolver;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -14,27 +12,23 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-@Data
 public class CommandData {
 
-    @NonNull
     private final String name;
     private final List<String> aliases;
     private final String permission;
     private final String syntax;
 
-    @NonNull
-    private BaseCommand executor;
+    private Object executor;
 
-    @NonNull
     private Method method;
 
-    private ContextResolver<?>[] resolvers;
+    private ArgumentResolver<?>[] resolvers;
 
     private final int requiredResolvers;
     private final int optionalResolvers;
 
-    public CommandData(String name, List<String> aliases, String permission, String syntax, BaseCommand executor, Method method) {
+    public CommandData(String name, List<String> aliases, String permission, String syntax, Object executor, Method method) {
         this.name = name;
         this.aliases = aliases;
         this.permission = permission;
@@ -45,20 +39,24 @@ public class CommandData {
         int requiredResolvers = 0;
         int optionalResolvers = 0;
 
-        resolvers = new ContextResolver[method.getParameterCount()];
+        resolvers = new ArgumentResolver[method.getParameterCount() - 1];
         for (int i = 0; i < method.getParameterCount(); i++) {
+            if(i == 0) {
+                continue;
+            }
+
             final Parameter parameter = method.getParameters()[i];
             final Class<?> type = parameter.getType();
 
-            final ContextResolver<?> resolver = CommandContexts.getContextMap().get(type);
+            final ArgumentResolver<?> resolver = ArgumentsResolver.getResolverMap().get(type);
 
             if (resolver != null) {
-                resolvers[i] = resolver;
-                    if (parameter.getAnnotation(Optional.class) != null || parameter.getAnnotation(Default.class) != null) {
-                        optionalResolvers++;
-                    } else {
-                        requiredResolvers++;
-                    }
+                resolvers[i - 1] = resolver;
+                if (parameter.getAnnotation(Optional.class) != null || parameter.getAnnotation(Default.class) != null) {
+                    optionalResolvers++;
+                } else {
+                    requiredResolvers++;
+                }
             } else {
                 //TODO
                 System.err.println("No resolver for class " + type.getName());
@@ -75,14 +73,18 @@ public class CommandData {
         int remainingRequired = requiredResolvers;
 
         for(int i = 0; i < method.getParameterCount(); i++) {
+            if(i == 0) {
+                continue;
+            }
+
             Parameter parameter = method.getParameters()[i];
 
-            ContextResolver<?> resolver = resolvers[i];
+            ArgumentResolver<?> resolver = resolvers[i - 1];
             if(!(parameter.getAnnotation(Optional.class) != null || parameter.getAnnotation(Default.class) != null)) {
                 remainingRequired--;
             }
 
-            boolean isLast = i == method.getParameterCount() - 1;
+            boolean isLast = i - 1 == method.getParameterCount() - 1;
             boolean allowOptional = remainingRequired == 0;
 
             if(args.isEmpty() && !(isLast && parameter.getType() == String[].class)) {
@@ -93,14 +95,50 @@ public class CommandData {
                     args.add(def.value());
                 }
                 else if(allowOptional && opt != null) {
-                    resolvedArgs.put(parameter.getName(), resolver.getContext(new CommandContext(i, this, args)));
+                    resolvedArgs.put(parameter.getName(), resolver.getResolver(new ArgumentData(i, this, args)));
                     continue;
                 }
             }
 
-            resolvedArgs.put(parameter.getName(), resolver.getContext(new CommandContext(i, this, args)));
+            resolvedArgs.put(parameter.getName(), resolver.getResolver(new ArgumentData(i, this, args)));
         }
 
         return resolvedArgs;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public List<String> getAliases() {
+        return aliases;
+    }
+
+    public String getPermission() {
+        return permission;
+    }
+
+    public String getSyntax() {
+        return syntax;
+    }
+
+    public Object getExecutor() {
+        return executor;
+    }
+
+    public Method getMethod() {
+        return method;
+    }
+
+    public ArgumentResolver<?>[] getResolvers() {
+        return resolvers;
+    }
+
+    public int getRequiredResolvers() {
+        return requiredResolvers;
+    }
+
+    public int getOptionalResolvers() {
+        return optionalResolvers;
     }
 }

@@ -9,6 +9,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public class CommandListener extends ListenerAdapter {
 
@@ -40,7 +42,7 @@ public class CommandListener extends ListenerAdapter {
         }
 
         String[] rawArgs = parts.length > 1 ? Arrays.copyOfRange(parts, 1, parts.length) : new String[0];
-        if(command.getMethod().getParameters().length >= 1) {
+        if(command.getMethod().getParameters().length >= 2) {
             execute(e, command.getExecutor(), command.getMethod(), new Object[] { rawArgs });
         }
         else if(rawArgs.length == 0) {
@@ -49,7 +51,7 @@ public class CommandListener extends ListenerAdapter {
         else {
             CommandData subcommand = registerer.getCommands().get(command).stream().filter(sc -> sc.getName().equalsIgnoreCase(rawArgs[0]) || sc.getAliases().contains(rawArgs[0].toLowerCase())).findFirst().orElse(null);
             if(subcommand == null) {
-                System.out.println("Not found :<");
+                System.err.println("Not found :<");
                 return;
             }
 
@@ -57,13 +59,13 @@ public class CommandListener extends ListenerAdapter {
         }
     }
 
-    private void execute(MessageReceivedEvent e, BaseCommand executor, Method method, Object... args) {
+    private void execute(MessageReceivedEvent e, Object executor, Method method, Object... args) {
         try {
-            executor.setValues(e.getJDA(), e.getAuthor(), e.getMessage(), e.getChannel(), e.getGuild());
-            method.invoke(executor, args);
-            executor.setValues(null, null, null, null, null);
-        } catch (IllegalAccessException | InvocationTargetException ex) {
-            ex.printStackTrace();
+            List<Object> listArgs = new ArrayList<>(Arrays.asList(args));
+            listArgs.add(0, new CommandContext(e.getJDA(), e.getAuthor(), e.getMessage(), e.getChannel(), e.getGuild()));
+            method.invoke(executor, listArgs.toArray());
+        } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException ex) {
+            System.out.println(ex.getClass().getSimpleName() + ": " + ex.getMessage());
         }
     }
 }

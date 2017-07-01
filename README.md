@@ -13,7 +13,7 @@ new BCF(jda).setPrefix("my-prefix!")
     .register(new OtherCommand());
 ```
 
-For more advanced users you can add custom CommandContexts (see "Command Contexts" for more info) by doing `.addContext(Class type, ContextResolver resolver)`
+For more advanced users you can add custom ArgumentResolvers (see "Argument Resolvers" for more info) by doing `.addContext(Class type, ContextResolver resolver)`
 
 ## Example
 ```java
@@ -65,8 +65,8 @@ public class MyCommand extends BaseCommand {
 }
 ```
 
-## Command Contexts
-CommandContexts convert a String to a specific type. The following types are supported out of the box:
+## Argument Resolvers
+Argument resolvers convert a String to a specific type. The following types are supported out of the box:
 
 #### Primitives
 |Primitive|Supported|Class    |Supported|
