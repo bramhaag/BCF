@@ -1,32 +1,28 @@
 package me.bramhaag.bcf;
 
-import lombok.Getter;
-import lombok.Setter;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public class CommandListener extends ListenerAdapter {
 
-    private BCF bcf;
-    @Getter @Setter
-    private String prefix;
-    private CommandRegisterer registerer;
+    @NotNull private String prefix;
+    @NotNull private CommandRegisterer registerer;
 
-    public CommandListener(BCF bcf, String prefix, CommandRegisterer registerer) {
-        this.bcf = bcf;
+    public CommandListener(@NotNull String prefix, @NotNull CommandRegisterer registerer) {
         this.prefix = prefix;
         this.registerer = registerer;
     }
 
     @Override
-    public void onMessageReceived(MessageReceivedEvent e) {
+    public void onMessageReceived(@NotNull MessageReceivedEvent e) {
         if(!e.getMessage().getRawContent().startsWith(prefix)) {
             return;
         }
@@ -59,7 +55,7 @@ public class CommandListener extends ListenerAdapter {
         }
     }
 
-    private void execute(MessageReceivedEvent e, Object executor, Method method, Object... args) {
+    private void execute(@NotNull MessageReceivedEvent e, @NotNull Object executor, @NotNull Method method, @NotNull Object... args) {
         try {
             List<Object> listArgs = new ArrayList<>(Arrays.asList(args));
             listArgs.add(0, new CommandContext(e.getJDA(), e.getAuthor(), e.getMessage(), e.getChannel(), e.getGuild()));
@@ -67,5 +63,14 @@ public class CommandListener extends ListenerAdapter {
         } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException ex) {
             System.out.println(ex.getClass().getSimpleName() + ": " + ex.getMessage());
         }
+    }
+
+    @NotNull
+    public String getPrefix() {
+        return prefix;
+    }
+
+    public void setPrefix(@NotNull String prefix) {
+        this.prefix = prefix;
     }
 }

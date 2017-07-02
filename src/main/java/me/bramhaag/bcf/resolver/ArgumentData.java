@@ -3,6 +3,8 @@ package me.bramhaag.bcf.resolver;
 import lombok.Data;
 import lombok.NonNull;
 import me.bramhaag.bcf.CommandData;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Parameter;
 import java.util.List;
@@ -11,11 +13,11 @@ import java.util.List;
 public class ArgumentData {
 
     private final int index;
-    @NonNull
-    private final CommandData command;
-    @NonNull
-    private final List<String> args;
 
+    @NotNull private final CommandData command;
+    @NotNull private final List<String> args;
+
+    @Nullable
     public String pop() {
         return !args.isEmpty() ? args.remove(0) : null;
     }
@@ -24,6 +26,7 @@ public class ArgumentData {
         return command.getMethod().getParameters().length - 1 == index;
     }
 
+    @NotNull
     public Parameter getParameter() {
         return command.getMethod().getParameters()[index];
     }

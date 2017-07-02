@@ -1,6 +1,5 @@
 package me.bramhaag.bcf;
 
-import lombok.Getter;
 import me.bramhaag.bcf.annotations.Command;
 import me.bramhaag.bcf.annotations.CommandBase;
 import me.bramhaag.bcf.annotations.Permission;
@@ -8,6 +7,7 @@ import me.bramhaag.bcf.annotations.Subcommand;
 import me.bramhaag.bcf.annotations.Syntax;
 import me.bramhaag.bcf.exceptions.InvalidCommandException;
 import me.bramhaag.bcf.exceptions.NoBaseCommandException;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -18,10 +18,14 @@ import java.util.stream.Collectors;
 
 public class CommandRegisterer {
 
-    @Getter
+    @NotNull
     private HashMap<CommandData, List<CommandData>> commands = new HashMap<>();
 
-    public void register(Object executor) {
+    /**
+     * Register a command
+     * @param executor instance of the command class
+     */
+    public void register(@NotNull Object executor) {
         Class<?> commandClass = executor.getClass();
         Command command = commandClass.getAnnotation(Command.class);
         if(command == null) {
@@ -70,5 +74,14 @@ public class CommandRegisterer {
                         syntax == null ? null : syntax.value(),
                         executor, baseMethod
                 ), subcommands);
+    }
+
+    /**
+     * Get all registered commands
+     * @return all registered commands
+     */
+    @NotNull
+    public HashMap<CommandData, List<CommandData>> getCommands() {
+        return commands;
     }
 }

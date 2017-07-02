@@ -1,8 +1,11 @@
 package me.bramhaag.bcf.resolver;
 
+import org.jetbrains.annotations.NotNull;
+
 public class ResolverUtil {
 
-    public static Number parseNumber(String number) {
+    @NotNull
+    public static Number parseNumber(@NotNull String number) {
         return Double.parseDouble(number);
     }
 }

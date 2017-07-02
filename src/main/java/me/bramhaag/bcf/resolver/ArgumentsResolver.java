@@ -1,21 +1,25 @@
 package me.bramhaag.bcf.resolver;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class ArgumentsResolver {
 
-    private static Map<Class<?>, ArgumentResolver<?>> resolverMap = new HashMap<>();
+    @NotNull private static Map<Class<?>, ArgumentResolver<?>> resolverMap = new HashMap<>();
 
-    public <T> void registerResolver(Class<T> primitive, Class<T> wrapper, ArgumentResolver<T> supplier) {
+    public <T> void registerResolver(@NotNull Class<T> primitive, @NotNull Class<T> wrapper, @NotNull ArgumentResolver<T> supplier) {
         registerResolver(primitive, supplier);
         registerResolver(wrapper, supplier);
     }
 
-    public <T> void registerResolver(Class<T> context, ArgumentResolver<T> supplier) {
+    public <T> void registerResolver(@NotNull Class<T> context, @NotNull ArgumentResolver<T> supplier) {
         resolverMap.put(context, supplier);
     }
 
+    @Nullable
     public ArgumentResolver<?> getResolver(Class<?> type) {
         Class<?> rootType = type;
         do {
@@ -34,6 +38,7 @@ public class ArgumentsResolver {
         return null;
     }
 
+    @NotNull
     public static Map<Class<?>, ArgumentResolver<?>> getResolverMap() {
         return resolverMap;
     }

@@ -5,6 +5,8 @@ import me.bramhaag.bcf.annotations.Optional;
 import me.bramhaag.bcf.resolver.ArgumentData;
 import me.bramhaag.bcf.resolver.ArgumentsResolver;
 import me.bramhaag.bcf.resolver.ArgumentResolver;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -14,21 +16,21 @@ import java.util.Map;
 
 public class CommandData {
 
-    private final String name;
-    private final List<String> aliases;
-    private final String permission;
-    private final String syntax;
+    @NotNull private final String name;
+    @NotNull private final List<String> aliases;
+    @Nullable private final String permission;
+    @Nullable private final String syntax;
 
-    private Object executor;
+    @NotNull private Object executor;
 
-    private Method method;
+    @NotNull private Method method;
 
-    private ArgumentResolver<?>[] resolvers;
+    @NotNull private ArgumentResolver<?>[] resolvers;
 
     private final int requiredResolvers;
     private final int optionalResolvers;
 
-    public CommandData(String name, List<String> aliases, String permission, String syntax, Object executor, Method method) {
+    public CommandData(@NotNull String name, @NotNull List<String> aliases, @Nullable String permission, @Nullable String syntax, @NotNull Object executor, @NotNull Method method) {
         this.name = name;
         this.aliases = aliases;
         this.permission = permission;
@@ -67,7 +69,8 @@ public class CommandData {
         this.optionalResolvers = optionalResolvers;
     }
 
-    public Map<String, Object> resolve(List<String> args) {
+    @NotNull
+    public Map<String, Object> resolve(@NotNull List<String> args) {
         Map<String, Object> resolvedArgs = new LinkedHashMap<>();
 
         int remainingRequired = requiredResolvers;
@@ -106,30 +109,37 @@ public class CommandData {
         return resolvedArgs;
     }
 
+    @NotNull
     public String getName() {
         return name;
     }
 
+    @NotNull
     public List<String> getAliases() {
         return aliases;
     }
 
+    @Nullable
     public String getPermission() {
         return permission;
     }
 
+    @Nullable
     public String getSyntax() {
         return syntax;
     }
 
+    @NotNull
     public Object getExecutor() {
         return executor;
     }
 
+    @NotNull
     public Method getMethod() {
         return method;
     }
 
+    @NotNull
     public ArgumentResolver<?>[] getResolvers() {
         return resolvers;
     }

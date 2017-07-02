@@ -1,18 +1,49 @@
 package me.bramhaag.bcf;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
+import org.jetbrains.annotations.NotNull;
 
-@AllArgsConstructor
 public class CommandContext {
-    @Getter private JDA jda;
-    @Getter private User author;
-    @Getter private Message message;
-    @Getter private MessageChannel channel;
-    @Getter private Guild guild;
+    @NotNull private JDA jda;
+    @NotNull private User author;
+    @NotNull private Message message;
+    @NotNull private MessageChannel channel;
+    @NotNull private Guild guild;
+
+    public CommandContext(@NotNull JDA jda, @NotNull User author, @NotNull Message message, @NotNull MessageChannel channel, @NotNull Guild guild) {
+        this.jda = jda;
+        this.author = author;
+        this.message = message;
+        this.channel = channel;
+        this.guild = guild;
+    }
+
+    @NotNull
+    public JDA getJda() {
+        return jda;
+    }
+
+    @NotNull
+    public User getAuthor() {
+        return author;
+    }
+
+    @NotNull
+    public Message getMessage() {
+        return message;
+    }
+
+    @NotNull
+    public MessageChannel getChannel() {
+        return channel;
+    }
+
+    @NotNull
+    public Guild getGuild() {
+        return guild;
+    }
 }
