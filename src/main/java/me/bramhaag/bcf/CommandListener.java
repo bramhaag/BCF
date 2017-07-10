@@ -40,23 +40,24 @@ public class CommandListener extends ListenerAdapter {
         }
 
         String[] rawArgs = parts.length > 1 ? Arrays.copyOfRange(parts, 1, parts.length) : new String[0];
-        if(command.getMethod().getParameters().length >= 2) {
-            execute(e, command.getExecutor(), command.getMethod(), new Object[] { rawArgs });
-        }
-        else if(rawArgs.length == 0) {
+
+        if(rawArgs.length == 0 && command.getRequiredResolvers() == 0) {
             execute(e, command.getExecutor(), command.getMethod());
+            return;
         }
-        else {
-            CommandData subcommand = registerer.getCommands().get(command).stream().filter(sc -> sc.getName().equalsIgnoreCase(rawArgs[0]) || sc.getAliases().contains(rawArgs[0].toLowerCase())).findFirst().orElse(null);
-            if(subcommand == null) {
-                try {
-                    execute(e, command.getExecutor(), command.getMethod(), new Object[]{rawArgs});
-                } catch (CommandExecutionException ignored) {}
 
-                return;
-            }
+        CommandData subcommand = registerer.getCommands().get(command).stream().filter(sc -> sc.getName().equalsIgnoreCase(rawArgs[0]) || sc.getAliases().contains(rawArgs[0].toLowerCase())).findFirst().orElse(null);
+        if(subcommand != null) {
+            execute(e, command.getExecutor(), subcommand.getMethod(), subcommand.resolve(rawArgs.length > 1 ? Arrays.copyOfRange(rawArgs, 1, rawArgs.length) : new String[0]).values().toArray());
+            return;
+        }
 
-            execute(e, command.getExecutor(), subcommand.getMethod(), subcommand.resolve(new ArrayList<>(Arrays.asList(rawArgs.length > 1 ? Arrays.copyOfRange(rawArgs, 1, rawArgs.length) : new String[0]))).values().toArray());
+        try {
+            execute(e, command.getExecutor(), command.getMethod(), command.resolve(rawArgs).values().toArray());
+        } catch (CommandExecutionException ex) {
+            if(ex.getCause().getClass() != IllegalArgumentException.class) throw ex;
+
+            bcf.onCommandNotFound();
         }
     }
 

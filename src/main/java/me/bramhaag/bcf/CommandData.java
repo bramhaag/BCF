@@ -10,6 +10,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,8 +72,9 @@ public class CommandData {
     }
 
     @NotNull
-    public Map<String, Object> resolve(@NotNull List<String> args) {
+    public Map<String, Object> resolve(@NotNull String[] argsArray) {
         Map<String, Object> resolvedArgs = new LinkedHashMap<>();
+        List<String> args = new ArrayList<>(Arrays.asList(argsArray));
 
         int remainingRequired = requiredResolvers;
 
