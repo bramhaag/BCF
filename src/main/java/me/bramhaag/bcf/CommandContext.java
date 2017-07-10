@@ -23,7 +23,7 @@ public class CommandContext {
     }
 
     @NotNull
-    public JDA getJda() {
+    public JDA getJDA() {
         return jda;
     }
 

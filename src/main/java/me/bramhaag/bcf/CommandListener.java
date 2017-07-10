@@ -1,9 +1,9 @@
 package me.bramhaag.bcf;
 
+import me.bramhaag.bcf.exceptions.CommandExecutionException;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -13,10 +13,13 @@ import java.util.List;
 
 public class CommandListener extends ListenerAdapter {
 
+    @NotNull private BCF bcf;
+
     @NotNull private String prefix;
     @NotNull private CommandRegisterer registerer;
 
-    public CommandListener(@NotNull String prefix, @NotNull CommandRegisterer registerer) {
+    public CommandListener(@NotNull BCF bcf, @NotNull String prefix, @NotNull CommandRegisterer registerer) {
+        this.bcf = bcf;
         this.prefix = prefix;
         this.registerer = registerer;
     }
@@ -32,8 +35,7 @@ public class CommandListener extends ListenerAdapter {
         CommandData command = registerer.getCommands().keySet().stream().filter(c -> c.getName().equalsIgnoreCase(name) || c.getAliases().contains(name.toLowerCase())).findFirst().orElse(null);
 
         if(command == null) {
-            //TODO
-            e.getChannel().sendMessage("Command not found!");
+            bcf.onCommandNotFound();
             return;
         }
 
@@ -47,7 +49,10 @@ public class CommandListener extends ListenerAdapter {
         else {
             CommandData subcommand = registerer.getCommands().get(command).stream().filter(sc -> sc.getName().equalsIgnoreCase(rawArgs[0]) || sc.getAliases().contains(rawArgs[0].toLowerCase())).findFirst().orElse(null);
             if(subcommand == null) {
-                System.err.println("Not found :<");
+                try {
+                    execute(e, command.getExecutor(), command.getMethod(), new Object[]{rawArgs});
+                } catch (CommandExecutionException ignored) {}
+
                 return;
             }
 
@@ -61,7 +66,7 @@ public class CommandListener extends ListenerAdapter {
             listArgs.add(0, new CommandContext(e.getJDA(), e.getAuthor(), e.getMessage(), e.getChannel(), e.getGuild()));
             method.invoke(executor, listArgs.toArray());
         } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException ex) {
-            System.out.println(ex.getClass().getSimpleName() + ": " + ex.getMessage());
+            throw new CommandExecutionException("An error occurred while executing " + executor.getClass().getSimpleName(), ex);
         }
     }
 

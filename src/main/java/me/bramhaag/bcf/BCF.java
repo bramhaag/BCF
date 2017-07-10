@@ -6,7 +6,9 @@ import me.bramhaag.bcf.resolver.resolvers.JDAArgumentResolver;
 import me.bramhaag.bcf.resolver.resolvers.JavaArgumentResolver;
 import net.dv8tion.jda.core.JDA;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class BCF {
@@ -20,13 +22,16 @@ public class BCF {
     @NotNull
     private ArgumentsResolver resolvers = new ArgumentsResolver();
 
+    @Nullable
+    private Runnable commandNotFound;
+
     /**
      * Creates an empty BCF class. Please set a prefix using {@link BCF#setPrefix(String)}
      * @param jda instance of {@link JDA}
      */
     public BCF(@NotNull JDA jda) {
         this.registerer = new CommandRegisterer();
-        this.listener = new CommandListener("", registerer);
+        this.listener = new CommandListener(this,"", registerer);
 
         jda.addEventListener(listener);
 
@@ -69,6 +74,12 @@ public class BCF {
         return this;
     }
 
+    public BCF onCommandNotFound(Runnable runnable) {
+        this.commandNotFound = runnable;
+
+        return this;
+    }
+
     /**
      * Get {@link CommandRegisterer} which can be used for registering commands.
      * Consider using the {@link BCF#register(Object)} shortcut when registering commands.
@@ -77,5 +88,10 @@ public class BCF {
     @NotNull
     public CommandRegisterer getRegisterer() {
         return registerer;
+    }
+
+    public void onCommandNotFound() {
+        if(commandNotFound != null)
+            commandNotFound.run();
     }
 }
