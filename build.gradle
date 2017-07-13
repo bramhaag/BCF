@@ -1,8 +1,21 @@
 group 'me.bramhaag'
-version '0.1'
+version '0.2'
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.4'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
+    }
+}
 
 apply plugin: 'java'
+apply plugin: 'com.jfrog.bintray'
 apply plugin: 'maven'
+apply plugin: 'maven-publish'
+apply plugin: 'com.github.johnrengelman.shadow'
 
 sourceCompatibility = 1.8
 
@@ -11,7 +24,56 @@ repositories {
 }
 
 dependencies {
+    compile 'net.sf.jopt-simple:jopt-simple:6.0-alpha-1'
+
     compileOnly 'net.dv8tion:JDA:3.1.1_212'
     compileOnly "org.projectlombok:lombok:1.16.16"
     compileOnly "org.jetbrains:annotations:15.0"
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Version': version
+    }
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+        }
+    }
+}
+
+bintray {
+    user = System.getenv('bintray_user') ?: bintray_user
+    key = System.getenv('bintray_api_key') ?: bintray_api_key
+    publications = ['mavenJava']
+
+    pkg {
+        repo = 'maven'
+        userOrg = System.getenv('bintray_user') ?: bintray_user
+        name = 'BCF'
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/bramhaag/bcf'
+
+        version {
+            name = project.version
+            desc = "BCF v${project.version}"
+            released = new Date()
+        }
+
+    }
 }

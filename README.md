@@ -40,20 +40,17 @@ public class MyCommand extends BaseCommand {
         getChannel().sendMessage("Result: " + (first * second)).queue();
     }
     
-    //The optional annotation is used for optional parameters, these should always be last
-    @Subcommand("multiplyOptional")
-    public void multiplyOptional(int first, int second, @Optional Integer third) {
-        if(third == null) {
-            getChannel().sendMessage("Result: " + (first * second)).queue();
-        } else {
-            getChannel().sendMessage("Result: " + (first * second * third)).queue(); 
-        }
+    //Optional parameters are parameters which can be null
+    @Subcommand("subcommandDefaultValue")
+    public void sendAMessage(String myMessage, @Optional String prefix) {
+        if(prefix == null) getChannel().sendMessage(myMessage).queue();
+        else getChannel().sendMessage(prefix + " " + myMessage).queue();
     }
     
     //Default parameters are like optionals, but with a default value
-    @Subcommand("subcommandDefaultValue")
-    public void sendAMessage(String myMessage, @Default("my-prefix") String prefix) {
-        getChannel().sendMessage(prefix + " " + myMessage).queue();
+    @Subcommand("multiplyOptional")
+    public void multiplyOptional(int first, int second, @Default("1") int third) {
+        getChannel().sendMessage("Result: " + (first * second * third)).queue(); 
     }
     
     //String arrays can also be used to collect other all arguments
