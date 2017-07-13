@@ -11,6 +11,7 @@ import net.dv8tion.jda.core.JDA;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -62,6 +63,17 @@ public class BCF {
      */
     public <T> BCF addResolver(@NotNull Class<T> type, @NotNull ArgumentResolver<T> resolver) {
         resolvers.registerResolver(type, resolver);
+
+        return this;
+    }
+
+    /**
+     * Register multiple commands
+     * @param executors vararg of instances of the command's class
+     * @return the {@link BCF} instance. Useful for chaining.
+     */
+    public BCF register(@NotNull Object... executors) {
+        Arrays.stream(executors).forEach(this::register);
 
         return this;
     }

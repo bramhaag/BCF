@@ -111,16 +111,12 @@ public class CommandListener extends ListenerAdapter {
             if(flag.required()) builder.required();
         }
 
-        Map<OptionSpec<?>, List<?>> map = parser.parse(arguments).asMap();
-        Map<String, String> flags = new HashMap<>();
+        OptionSet parse = parser.parse(arguments);
+        Map<OptionSpec<?>, List<?>> map = parse.asMap();
+        Map<String, String> flags = map.entrySet().stream()
+                .collect(Collectors.toMap(x -> x.getKey().options().get(0), x -> x.getValue().size() > 0 ? (String) x.getValue().get(0) : null));
 
-        //TODO NEEDS MORE LAMBDA
-        for(Map.Entry<OptionSpec<?>, List<?>> e : map.entrySet()) {
-            flags.put(e.getKey().options().get(0), e.getValue().size() > 0 ? (String)e.getValue().get(0) : null);
-        }
-
-        return new Pair<>(flags, parser.nonOptions().options()
-        );
+        return new Pair<>(flags, (List<String>)parse.nonOptionArguments());
     }
 
     @NotNull
