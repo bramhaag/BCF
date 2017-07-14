@@ -2,9 +2,9 @@ package me.bramhaag.bcf;
 
 import me.bramhaag.bcf.annotations.Command;
 import me.bramhaag.bcf.annotations.CommandBase;
-import me.bramhaag.bcf.annotations.Permission;
+import me.bramhaag.bcf.annotations.CommandFlags;
 import me.bramhaag.bcf.annotations.Subcommand;
-import me.bramhaag.bcf.annotations.Syntax;
+import me.bramhaag.bcf.annotations.CommandMeta;
 import me.bramhaag.bcf.exceptions.InvalidCommandException;
 import me.bramhaag.bcf.exceptions.NoBaseCommandException;
 import org.jetbrains.annotations.NotNull;
@@ -34,13 +34,13 @@ public class CommandRegisterer {
 
         String[] parts = command.value().split("\\|");
 
-        Permission permission = commandClass.getAnnotation(Permission.class);
-        Syntax syntax = commandClass.getAnnotation(Syntax.class);
-
         Method baseMethod = Arrays.stream(commandClass.getMethods()).filter(m -> m.isAnnotationPresent(CommandBase.class)).findFirst().orElse(null);
         if(baseMethod == null) {
             throw new NoBaseCommandException(commandClass);
         }
+
+        CommandFlags flags = baseMethod.getAnnotation(CommandFlags.class);
+        CommandMeta meta = baseMethod.getAnnotation(CommandMeta.class);
 
         if(baseMethod.getParameters()[0].getType() != CommandContext.class) {
             throw new InvalidCommandException("Cannot register " + parts[0] + "! CommandContext is missing or not the first parameter in the base method!");
@@ -48,8 +48,8 @@ public class CommandRegisterer {
 
         List<CommandData> subcommands = Arrays.stream(commandClass.getMethods()).filter(method -> method.isAnnotationPresent(Subcommand.class)).map(method -> {
             Subcommand subcommand = method.getAnnotation(Subcommand.class);
-            Permission scPermission = method.getAnnotation(Permission.class);
-            Syntax scSyntax = method.getAnnotation(Syntax.class);
+            CommandFlags scFlags = commandClass.getAnnotation(CommandFlags.class);
+            CommandMeta scMeta = commandClass.getAnnotation(CommandMeta.class);
 
             String[] scParts = subcommand.value().split("\\|");
 
@@ -60,8 +60,9 @@ public class CommandRegisterer {
             return new CommandData(
                     scParts[0],
                     scParts.length > 1 ? Arrays.asList(Arrays.copyOfRange(scParts, 1, scParts.length)) : new ArrayList<>(),
-                    scPermission == null ? null : scPermission.value(),
-                    scSyntax == null ? null : scSyntax.value(),
+                    scFlags == null ? null : scFlags.value(),
+                    scMeta == null ? null : scMeta.usage(),
+                    scMeta == null ? null : scMeta.description(),
                     executor, method
             );
         }).collect(Collectors.toList());
@@ -70,8 +71,9 @@ public class CommandRegisterer {
                 new CommandData(
                         parts[0],
                         parts.length > 1 ? Arrays.asList(Arrays.copyOfRange(parts, 1, parts.length)) : new ArrayList<>(),
-                        permission == null ? null : permission.value(),
-                        syntax == null ? null : syntax.value(),
+                        flags == null ? null : flags.value(),
+                        meta == null ? null : meta.usage(),
+                        meta == null ? null : meta.description(),
                         executor, baseMethod
                 ), subcommands);
     }

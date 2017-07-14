@@ -1,6 +1,9 @@
 package me.bramhaag.bcf;
 
+import me.bramhaag.bcf.annotations.CommandFlags;
+import me.bramhaag.bcf.annotations.CommandMeta;
 import me.bramhaag.bcf.annotations.Default;
+import me.bramhaag.bcf.annotations.Flag;
 import me.bramhaag.bcf.annotations.Optional;
 import me.bramhaag.bcf.resolver.ArgumentData;
 import me.bramhaag.bcf.resolver.ArgumentsResolver;
@@ -20,8 +23,9 @@ public class CommandData {
 
     @NotNull private final String name;
     @NotNull private final List<String> aliases;
-    @Nullable private final String permission;
-    @Nullable private final String syntax;
+    @Nullable private final Flag[] flags;
+    @Nullable private final String usage;
+    @Nullable private final String description;
 
     @NotNull private Object executor;
 
@@ -32,11 +36,12 @@ public class CommandData {
     private final int requiredResolvers;
     private final int optionalResolvers;
 
-    public CommandData(@NotNull String name, @NotNull List<String> aliases, @Nullable String permission, @Nullable String syntax, @NotNull Object executor, @NotNull Method method) {
+    public CommandData(@NotNull String name, @NotNull List<String> aliases, @Nullable Flag[] flags, @Nullable String usage, @Nullable String description, @NotNull Object executor, @NotNull Method method) {
         this.name = name;
         this.aliases = aliases;
-        this.permission = permission;
-        this.syntax = syntax;
+        this.flags = flags;
+        this.usage = usage;
+        this.description = description;
         this.executor = executor;
         this.method = method;
 
@@ -123,13 +128,18 @@ public class CommandData {
     }
 
     @Nullable
-    public String getPermission() {
-        return permission;
+    public Flag[] getFlags() {
+        return flags;
     }
 
     @Nullable
-    public String getSyntax() {
-        return syntax;
+    public String getUsage() {
+        return usage;
+    }
+
+    @Nullable
+    public String getDescription() {
+        return description;
     }
 
     @NotNull

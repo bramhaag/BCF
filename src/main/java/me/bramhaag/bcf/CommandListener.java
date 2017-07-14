@@ -103,18 +103,23 @@ public class CommandListener extends ListenerAdapter {
         parser.allowsUnrecognizedOptions();
 
         for(Flag flag : commandFlags.value()) {
-            ArgumentAcceptingOptionSpec<String> builder;
-
-            if(flag.nullable()) builder = parser.accepts(flag.name()).withOptionalArg();
-            else builder = parser.accepts(flag.name()).withRequiredArg();
-
-            if(flag.required()) builder.required();
+            if(flag.nullable()) parser.accepts(flag.name());
+            else parser.accepts(flag.name()).withRequiredArg();
         }
 
         OptionSet parse = parser.parse(arguments);
         Map<OptionSpec<?>, List<?>> map = parse.asMap();
         Map<String, String> flags = map.entrySet().stream()
-                .collect(Collectors.toMap(x -> x.getKey().options().get(0), x -> x.getValue().size() > 0 ? (String) x.getValue().get(0) : null));
+                .filter(e -> e.getKey().options().get(0) != null)
+                .collect(HashMap::new, (m, e) -> {
+                    String key = e.getKey().options().get(0);
+                    if(!parse.has(key)) return;
+
+                    m.put(key, !e.getValue().isEmpty() && e.getValue().get(0) instanceof String ? (String)e.getValue().get(0) : null);
+                }, HashMap::putAll);
+        if(Arrays.stream(commandFlags.value()).filter(f -> f.required() && !flags.containsKey(f.name())).findAny().orElse(null) != null) {
+            throw new IllegalStateException("Not enough flags!");
+        }
 
         return new Pair<>(flags, (List<String>)parse.nonOptionArguments());
     }
