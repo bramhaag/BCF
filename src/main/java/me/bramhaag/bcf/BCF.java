@@ -1,8 +1,5 @@
 package me.bramhaag.bcf;
 
-import me.bramhaag.bcf.annotations.CommandBase;
-import me.bramhaag.bcf.annotations.CommandFlags;
-import me.bramhaag.bcf.annotations.Flag;
 import me.bramhaag.bcf.resolver.ArgumentsResolver;
 import me.bramhaag.bcf.resolver.ArgumentResolver;
 import me.bramhaag.bcf.resolver.resolvers.JDAArgumentResolver;
@@ -12,8 +9,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 public class BCF {
 

@@ -29,7 +29,7 @@ public class JavaArgumentResolver extends ArgumentsResolver {
         registerResolver(Object.class, ArgumentData::pop);
         registerResolver(String[].class, c -> {
             if(c.isLast()) {
-                String[] value = c.getArgs().toArray(new String[c.getCommand().getMethod().getParameterCount()]);
+                String[] value = c.getArgs().toArray(new String[0]);
                 c.getArgs().clear();
 
                 return value;
