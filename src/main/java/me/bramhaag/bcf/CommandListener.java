@@ -61,6 +61,8 @@ public class CommandListener extends ListenerAdapter {
             rawArgs = tempArgs;
         }
         
+        if (bcf.getPreCommandTask() != null) bcf.getPreCommandTask().accept(e);
+        
         if(rawArgs.length == 0 && command.getRequiredResolvers() == 0) {
             execute(e, command.getExecutor(), command.getMethod(), flags, switches);
             return;

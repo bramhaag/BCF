@@ -5,10 +5,12 @@ import me.bramhaag.bcf.resolver.ArgumentResolver;
 import me.bramhaag.bcf.resolver.resolvers.JDAArgumentResolver;
 import me.bramhaag.bcf.resolver.resolvers.JavaArgumentResolver;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.function.Consumer;
 
 public class BCF {
 
@@ -23,6 +25,9 @@ public class BCF {
 
     @Nullable
     private Runnable commandNotFound;
+    
+    @Nullable
+    private Consumer<MessageReceivedEvent> preCommandTask;
 
     /**
      * Creates an empty BCF class. Please set a prefix using {@link BCF#setPrefix(String)}
@@ -89,7 +94,18 @@ public class BCF {
 
         return this;
     }
-
+    
+    public BCF onPreCommand(Consumer<MessageReceivedEvent> preCommandTask) {
+        this.preCommandTask = preCommandTask;
+        
+        return this;
+    }
+    
+    @Nullable
+    public Consumer<MessageReceivedEvent> getPreCommandTask() {
+        return preCommandTask;
+    }
+    
     /**
      * Get {@link CommandRegisterer} which can be used for registering commands.
      * Consider using the {@link BCF#register(Object)} shortcut when registering commands.
