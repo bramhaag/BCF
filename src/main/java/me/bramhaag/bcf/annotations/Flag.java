@@ -4,4 +4,5 @@ public @interface Flag {
     String name();
     boolean nullable() default false;
     boolean required() default false;
+    boolean switchFlag() default false;
 }
