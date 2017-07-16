@@ -99,7 +99,7 @@ public class CommandListener extends ListenerAdapter {
         Set<String> foundSwitches = new HashSet<>();
         Set<String> switches = new HashSet<>();
         
-        for(Flag flag : commandFlags.flags()) {
+        for(Flag flag : commandFlags.value()) {
             if (flag.switchFlag()) {
                 parser.accepts(flag.name());
                 foundSwitches.add(flag.name());
@@ -116,7 +116,7 @@ public class CommandListener extends ListenerAdapter {
                     if (foundSwitches.contains(key) && parse.has(key)) switches.add(key);
                     else m.put(key, !e.getValue().isEmpty() && e.getValue().get(0) instanceof String ? (String)e.getValue().get(0) : null);
                 }, HashMap::putAll);
-        if(Arrays.stream(commandFlags.flags()).filter(f -> f.required() && !flags.containsKey(f.name())).findAny().orElse(null) != null) {
+        if(Arrays.stream(commandFlags.value()).filter(f -> f.required() && !flags.containsKey(f.name())).findAny().orElse(null) != null) {
             throw new IllegalStateException("Not enough flags!");
         }
         
