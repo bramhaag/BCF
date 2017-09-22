@@ -6,10 +6,9 @@ import joptsimple.OptionSpec;
 import me.bramhaag.bcf.annotations.CommandFlags;
 import me.bramhaag.bcf.annotations.Flag;
 import me.bramhaag.bcf.exceptions.CommandExecutionException;
+import me.bramhaag.bcf.util.Triple;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-import org.apache.commons.lang3.tuple.Triple;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
@@ -120,7 +119,7 @@ public class CommandListener extends ListenerAdapter {
             throw new IllegalStateException("Not enough flags!");
         }
         
-        return ImmutableTriple.of(flags, switches, (List<String>)parse.nonOptionArguments());
+        return new Triple<>(flags, switches, (List<String>)parse.nonOptionArguments());
     }
     
     @NotNull
