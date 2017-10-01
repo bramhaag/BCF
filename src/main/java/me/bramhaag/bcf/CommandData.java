@@ -1,29 +1,21 @@
 package me.bramhaag.bcf;
 
-import me.bramhaag.bcf.annotations.CommandFlags;
-import me.bramhaag.bcf.annotations.CommandMeta;
 import me.bramhaag.bcf.annotations.Default;
-import me.bramhaag.bcf.annotations.Flag;
 import me.bramhaag.bcf.annotations.Optional;
 import me.bramhaag.bcf.resolver.ArgumentData;
-import me.bramhaag.bcf.resolver.ArgumentsResolver;
 import me.bramhaag.bcf.resolver.ArgumentResolver;
+import me.bramhaag.bcf.resolver.ArgumentsResolver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CommandData {
 
     @NotNull private final String name;
     @NotNull private final List<String> aliases;
-    @Nullable private final Flag[] flags;
     @Nullable private final String usage;
     @Nullable private final String description;
 
@@ -36,10 +28,9 @@ public class CommandData {
     private final int requiredResolvers;
     private final int optionalResolvers;
 
-    public CommandData(@NotNull String name, @NotNull List<String> aliases, @Nullable Flag[] flags, @Nullable String usage, @Nullable String description, @NotNull Object executor, @NotNull Method method) {
+    public CommandData(@NotNull String name, @NotNull List<String> aliases, @Nullable String usage, @Nullable String description, @NotNull Object executor, @NotNull Method method) {
         this.name = name;
         this.aliases = aliases;
-        this.flags = flags;
         this.usage = usage;
         this.description = description;
         this.executor = executor;
@@ -125,11 +116,6 @@ public class CommandData {
     @NotNull
     public List<String> getAliases() {
         return aliases;
-    }
-
-    @Nullable
-    public Flag[] getFlags() {
-        return flags;
     }
 
     @Nullable

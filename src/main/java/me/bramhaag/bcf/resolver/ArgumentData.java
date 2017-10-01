@@ -1,7 +1,6 @@
 package me.bramhaag.bcf.resolver;
 
 import lombok.Data;
-import lombok.NonNull;
 import me.bramhaag.bcf.CommandData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

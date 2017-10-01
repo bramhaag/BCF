@@ -25,7 +25,6 @@ public class JDAArgumentResolver extends ArgumentsResolver {
         registerResolver(TextChannel.class, c -> {
             String value = c.pop().replaceAll("[^0-9]", "");
             return jda.getTextChannelById(value);
-
         });
 
         registerResolver(Guild.class, c -> {

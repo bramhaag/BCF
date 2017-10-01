@@ -1,8 +1,6 @@
 package me.bramhaag.bcf;
 
-import me.bramhaag.bcf.annotations.CommandBase;
-import me.bramhaag.bcf.annotations.CommandFlags;
-import me.bramhaag.bcf.annotations.Flag;
+import me.bramhaag.bcf.context.Context;
 import me.bramhaag.bcf.resolver.ArgumentsResolver;
 import me.bramhaag.bcf.resolver.ArgumentResolver;
 import me.bramhaag.bcf.resolver.resolvers.JDAArgumentResolver;
@@ -12,8 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 public class BCF {
 
@@ -28,6 +24,9 @@ public class BCF {
 
     @Nullable
     private Runnable commandNotFound;
+    
+    @Nullable
+    private Context context;
 
     /**
      * Creates an empty BCF class. Please set a prefix using {@link BCF#setPrefix(String)}
@@ -108,5 +107,14 @@ public class BCF {
     public void onCommandNotFound() {
         if(commandNotFound != null)
             commandNotFound.run();
+    }
+    
+    @Nullable
+    public Context getContext() {
+        return context;
+    }
+    
+    public void setContext(@NotNull Context context) {
+        this.context = context;
     }
 }

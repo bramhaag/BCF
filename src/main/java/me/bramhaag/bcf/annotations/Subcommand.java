@@ -8,5 +8,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Subcommand {
-    String value();
+    String name();
+    String usage() default "";
+    String description() default "No description provided";
+    String[] aliases() default {};
 }

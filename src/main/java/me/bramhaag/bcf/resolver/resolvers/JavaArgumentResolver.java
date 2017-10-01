@@ -27,15 +27,46 @@ public class JavaArgumentResolver extends ArgumentsResolver {
         registerResolver(Number.class,  c -> ResolverUtil.parseNumber(c.pop()));
         registerResolver(String.class, ArgumentData::pop);
         registerResolver(Object.class, ArgumentData::pop);
+        
         registerResolver(String[].class, c -> {
             if(c.isLast()) {
-                String[] value = c.getArgs().toArray(new String[c.getCommand().getMethod().getParameterCount()]);
+                String[] value = c.getArgs().toArray(new String[0]);
                 c.getArgs().clear();
 
                 return value;
             }
 
             throw new IllegalArgumentException("String[] has to be last!");
+        });
+        registerResolver(int[].class, c -> {
+            if (c.isLast()) {
+                int[] value = c.getArgs().stream().mapToInt(Integer::parseInt).toArray();
+                c.getArgs().clear();
+                
+                return value;
+            }
+            
+            throw new IllegalArgumentException("int[] has to be last!");
+        });
+        registerResolver(double[].class, c -> {
+            if (c.isLast()) {
+                double[] value = c.getArgs().stream().mapToDouble(Double::parseDouble).toArray();
+                c.getArgs().clear();
+            
+                return value;
+            }
+        
+            throw new IllegalArgumentException("double[] has to be last!");
+        });
+        registerResolver(long[].class, c -> {
+            if (c.isLast()) {
+                long[] value = c.getArgs().stream().mapToLong(Long::parseLong).toArray();
+                c.getArgs().clear();
+            
+                return value;
+            }
+        
+            throw new IllegalArgumentException("long[] has to be last!");
         });
     }
 }
